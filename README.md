@@ -54,6 +54,23 @@ https://github.com/Ieckseyr/DSH-wyyyy
 
 装完刷新页面，右上角出现音符图标。
 
+### 关于插件市场
+
+插件市场（dshmarket）的安装源只认精选列表
+[awesome-dsh-plugin](https://github.com/awesome-dsh-plugin/awesome-dsh-plugin) 里的条目，
+所以「上架」= 往那个仓库提一个 YAML 文件（`data/plugins/<owner>__<repo>.yml`）。
+
+本仓库的条目已经写好了：[`docs/catalog-entry.yml`](docs/catalog-entry.yml)。
+上架需要满足两个硬条件，缺一不可：
+
+1. 仓库创建满 **1 天**（CI 自动检查，今天建今天提会被打回）；
+2. 仓库加上 `dsh-plugin` topic（Settings → Topics）。
+
+两者满足后，把 `docs/catalog-entry.yml` 的内容提交到
+`awesome-dsh-plugin` 的 `data/plugins/Ieckseyr__DSH-wyyyy.yml` 即可。
+
+在这之前，用上面的「从仓库安装」照样能装——市场只是少一个入口，不影响使用。
+
 ## 用法
 
 1. 点右上角 ♪；
