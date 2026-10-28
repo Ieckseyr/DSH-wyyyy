@@ -310,7 +310,7 @@
         {
           type: 'button',
           className: 'ntm-btn is-primary',
-          style: { marginTop: 6 },
+          style: { marginTop: NT.em(6) },
           onClick: function () {
             NT.controller.setDetail({ kind: 'login' });
           },
@@ -354,14 +354,14 @@
       h(
         'div',
         { className: 'ntm-row is-clickable', onClick: function () { NT.controller.openLiked(); } },
-        h('div', { className: 'ntm-cover ntm-cover-empty', style: { width: 36, height: 36, borderRadius: 5 } }, h(NT.Icon, { name: 'heart', size: 16 })),
+        h('div', { className: 'ntm-cover ntm-cover-empty', style: { width: NT.em(36), height: NT.em(36), borderRadius: NT.em(5) } }, h(NT.Icon, { name: 'heart', size: 16 })),
         h('div', { className: 'ntm-row-main' }, h('span', { className: 'ntm-row-title' }, NT.t('liked_songs'))),
         h(NT.IconButton, { name: 'chevronRight', title: NT.t('play_all') }),
       ),
       h(
         'div',
         { className: 'ntm-row is-clickable', onClick: function () { NT.controller.setDetail({ kind: 'daily' }); } },
-        h('div', { className: 'ntm-cover ntm-cover-empty', style: { width: 36, height: 36, borderRadius: 5 } }, h(NT.Icon, { name: 'compass', size: 16 })),
+        h('div', { className: 'ntm-cover ntm-cover-empty', style: { width: NT.em(36), height: NT.em(36), borderRadius: NT.em(5) } }, h(NT.Icon, { name: 'compass', size: 16 })),
         h('div', { className: 'ntm-row-main' }, h('span', { className: 'ntm-row-title' }, NT.t('daily'))),
         h(NT.IconButton, { name: 'chevronRight', title: NT.t('view') }),
       ),
@@ -420,7 +420,7 @@
             {
               type: 'button',
               className: 'ntm-btn is-primary',
-              style: { marginTop: 8 },
+              style: { marginTop: NT.em(8) },
               onClick: function () {
                 NT.controller.setDetail({ kind: 'login' });
               },
@@ -432,7 +432,7 @@
         h(
           'div',
           { className: 'ntm-row is-clickable', onClick: function () { NT.controller.setDetail({ kind: 'settings' }); } },
-          h('div', { className: 'ntm-cover ntm-cover-empty', style: { width: 36, height: 36, borderRadius: 5 } }, h(NT.Icon, { name: 'sliders', size: 16 })),
+          h('div', { className: 'ntm-cover ntm-cover-empty', style: { width: NT.em(36), height: NT.em(36), borderRadius: NT.em(5) } }, h(NT.Icon, { name: 'sliders', size: 16 })),
           h('div', { className: 'ntm-row-main' }, h('span', { className: 'ntm-row-title' }, NT.t('quality') + ' · ' + NT.t('effects'))),
           h(NT.IconButton, { name: 'chevronRight', title: NT.t('settings') }),
         ),
@@ -462,21 +462,21 @@
       h(
         'div',
         { className: 'ntm-row is-clickable', onClick: function () { NT.controller.openLiked(); } },
-        h('div', { className: 'ntm-cover ntm-cover-empty', style: { width: 36, height: 36, borderRadius: 5 } }, h(NT.Icon, { name: 'heart', size: 16 })),
+        h('div', { className: 'ntm-cover ntm-cover-empty', style: { width: NT.em(36), height: NT.em(36), borderRadius: NT.em(5) } }, h(NT.Icon, { name: 'heart', size: 16 })),
         h('div', { className: 'ntm-row-main' }, h('span', { className: 'ntm-row-title' }, NT.t('liked_songs'))),
         h(NT.IconButton, { name: 'chevronRight', title: NT.t('play_all') }),
       ),
       h(
         'div',
         { className: 'ntm-row is-clickable', onClick: function () { NT.controller.setDetail({ kind: 'daily' }); } },
-        h('div', { className: 'ntm-cover ntm-cover-empty', style: { width: 36, height: 36, borderRadius: 5 } }, h(NT.Icon, { name: 'compass', size: 16 })),
+        h('div', { className: 'ntm-cover ntm-cover-empty', style: { width: NT.em(36), height: NT.em(36), borderRadius: NT.em(5) } }, h(NT.Icon, { name: 'compass', size: 16 })),
         h('div', { className: 'ntm-row-main' }, h('span', { className: 'ntm-row-title' }, NT.t('daily'))),
         h(NT.IconButton, { name: 'chevronRight', title: NT.t('view') }),
       ),
       h(
         'div',
         { className: 'ntm-row is-clickable', onClick: function () { NT.controller.setDetail({ kind: 'lyrics' }); } },
-        h('div', { className: 'ntm-cover ntm-cover-empty', style: { width: 36, height: 36, borderRadius: 5 } }, h(NT.Icon, { name: 'lyrics', size: 16 })),
+        h('div', { className: 'ntm-cover ntm-cover-empty', style: { width: NT.em(36), height: NT.em(36), borderRadius: NT.em(5) } }, h(NT.Icon, { name: 'lyrics', size: 16 })),
         h('div', { className: 'ntm-row-main' }, h('span', { className: 'ntm-row-title' }, NT.t('lyrics'))),
         h(NT.IconButton, { name: 'chevronRight', title: NT.t('lyrics') }),
       ),
@@ -484,7 +484,7 @@
       h(
         'div',
         { className: 'ntm-row is-clickable', onClick: function () { NT.controller.setDetail({ kind: 'settings' }); } },
-        h('div', { className: 'ntm-cover ntm-cover-empty', style: { width: 36, height: 36, borderRadius: 5 } }, h(NT.Icon, { name: 'sliders', size: 16 })),
+        h('div', { className: 'ntm-cover ntm-cover-empty', style: { width: NT.em(36), height: NT.em(36), borderRadius: NT.em(5) } }, h(NT.Icon, { name: 'sliders', size: 16 })),
         h('div', { className: 'ntm-row-main' }, h('span', { className: 'ntm-row-title' }, NT.t('quality') + ' · ' + NT.t('effects'))),
         h(NT.IconButton, { name: 'chevronRight', title: NT.t('settings') }),
       ),
@@ -544,7 +544,7 @@
       h(
         'div',
         { className: 'ntm-login-hero' },
-        h('span', { className: 'ntm-mark', style: { width: 34, height: 34, borderRadius: 10 } }, h(NT.Icon, { name: 'note', size: 18 })),
+        h('span', { className: 'ntm-mark', style: { width: NT.em(34), height: NT.em(34), borderRadius: NT.em(10) } }, h(NT.Icon, { name: 'note', size: 18 })),
         h('div', { className: 'ntm-login-title' }, NT.t('login_title')),
         h('div', { className: 'ntm-login-sub' }, NT.t('login_sub_hint')),
       ),
@@ -1016,7 +1016,7 @@
         { name: NT.t('lyrics_align') },
         h(
           'div',
-          { className: 'ntm-segmented', style: { width: 150 } },
+          { className: 'ntm-segmented', style: { width: NT.em(150) } },
           ['left', 'center', 'right'].map(function (key) {
             return h(
               'button',

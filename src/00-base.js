@@ -54,6 +54,11 @@
     return '/netease-music/audio?id=' + encodeURIComponent(id) + '&level=' + encodeURIComponent(level || 'exhigh');
   };
 
+  /** The stylesheet is em-based against a 13px design; JS sizes use the same unit. */
+  NT.em = function (value) {
+    return (Number(value) / 13).toFixed(3) + 'em';
+  };
+
   NT.cls = function () {
     var out = [];
     for (var i = 0; i < arguments.length; i++) {
@@ -626,8 +631,8 @@
       'svg',
       {
         viewBox: '0 0 24 24',
-        width: props.size || 16,
-        height: props.size || 16,
+        width: NT.em(props.size || 16),
+        height: NT.em(props.size || 16),
         fill: 'none',
         stroke: 'currentColor',
         strokeWidth: props.stroke || 1.7,
@@ -677,7 +682,7 @@
         'div',
         {
           className: 'ntm-cover ntm-cover-empty',
-          style: { width: size, height: size, borderRadius: radius },
+          style: { width: NT.em(size), height: NT.em(size), borderRadius: NT.em(radius) },
         },
         h(NT.Icon, { name: 'note', size: Math.round(size * 0.42) }),
       );
@@ -687,7 +692,7 @@
       src: props.src + '?param=' + size + 'y' + size,
       width: size,
       height: size,
-      style: { width: size, height: size, borderRadius: radius },
+      style: { width: NT.em(size), height: NT.em(size), borderRadius: NT.em(radius) },
       alt: '',
       loading: 'lazy',
       draggable: false,

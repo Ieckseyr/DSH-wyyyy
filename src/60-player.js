@@ -167,7 +167,7 @@
                     },
                     level === item.id
                       ? h(NT.Icon, { name: 'check', size: 14 })
-                      : h('span', { style: { width: 14, flex: 'none' } }),
+                      : h('span', { style: { width: NT.em(14), flex: 'none' } }),
                     NT.levelName(item),
                     h('span', { className: 'ntm-menu-sub' }, item.note),
                   );

@@ -105,7 +105,7 @@
 
     return h(
       'div',
-      { className: 'ntm-root ntm-dock-wrap', style: { marginTop: 6 } },
+      { className: 'ntm-root ntm-dock-wrap', style: { marginTop: NT.em(6) } },
       h(NT.StyleTag),
       volOpen
         ? h(
@@ -287,7 +287,7 @@
         'aria-hidden': true,
         style: {
           '--ntm-bg-opacity': String(settings.opacity == null ? 0.42 : settings.opacity),
-          '--ntm-bg-size': String(settings.size || 34) + 'px',
+          '--ntm-bg-size': NT.em(settings.size || 34),
           '--ntm-bg-offset': String(settings.offset == null ? 78 : settings.offset),
           '--ntm-bg-x': String(settings.offsetX == null ? 50 : settings.offsetX),
           '--ntm-bg-align': settings.align || 'center',

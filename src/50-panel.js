@@ -148,9 +148,13 @@
       var node = panelRef.current;
       if (!node) return;
       var rect = node.getBoundingClientRect();
+      // Everything the drag clamps against is expressed in the panel's own type unit,
+      // so the limits scale with the window like the rest of the UI.
+      var unit = parseFloat(window.getComputedStyle(node).fontSize) || 13;
       dragRef.current = {
         mode: mode,
         node: node,
+        unit: unit,
         startX: event.clientX,
         startY: event.clientY,
         left: rect.left,
@@ -173,22 +177,23 @@
       if (!drag) return;
       var dx = event.clientX - drag.startX;
       var dy = event.clientY - drag.startY;
-      var maxW = Math.min(window.innerWidth - 16, 720);
+      var minW = 24 * drag.unit;
+      var maxW = Math.min(window.innerWidth - 2 * drag.unit, 56 * drag.unit);
       var next = { x: drag.left, y: drag.top, w: drag.w, h: drag.h };
       if (drag.mode === 'move') {
-        next.x = clamp(drag.left + dx, 8, Math.max(8, window.innerWidth - 160));
-        next.y = clamp(drag.top + dy, 8, Math.max(8, window.innerHeight - 120));
+        next.x = clamp(drag.left + dx, 8, Math.max(8, window.innerWidth - 12 * drag.unit));
+        next.y = clamp(drag.top + dy, 8, Math.max(8, window.innerHeight - 9 * drag.unit));
       } else if (drag.mode === 'w') {
-        var left = clamp(drag.left + dx, 8, drag.left + drag.w - 320);
+        var left = clamp(drag.left + dx, 8, drag.left + drag.w - minW);
         next.x = left;
-        next.w = clamp(drag.w + (drag.left - left), 320, maxW);
+        next.w = clamp(drag.w + (drag.left - left), minW, maxW);
       } else if (drag.mode === 'h') {
-        next.h = clamp(drag.h + dy, 320, window.innerHeight - 16);
+        next.h = clamp(drag.h + dy, 24 * drag.unit, window.innerHeight - 16);
       } else if (drag.mode === 'sw') {
-        var left2 = clamp(drag.left + dx, 8, drag.left + drag.w - 320);
+        var left2 = clamp(drag.left + dx, 8, drag.left + drag.w - minW);
         next.x = left2;
-        next.w = clamp(drag.w + (drag.left - left2), 320, maxW);
-        next.h = clamp(drag.h + dy, 320, window.innerHeight - 16);
+        next.w = clamp(drag.w + (drag.left - left2), minW, maxW);
+        next.h = clamp(drag.h + dy, 24 * drag.unit, window.innerHeight - 16);
       }
       drag.next = next;
       paint(drag.node, next);
@@ -588,7 +593,7 @@
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          padding: 20,
+          padding: NT.em(20),
           background: 'rgba(0,0,0,.34)',
           backdropFilter: 'blur(2px)',
         },
@@ -599,8 +604,8 @@
         {
           style: {
             width: '100%',
-            maxWidth: 300,
-            padding: 12,
+            maxWidth: NT.em(300),
+            padding: NT.em(12),
             borderRadius: 14,
             background: 'var(--ntm-surface)',
             border: '1px solid var(--ntm-hairline)',
@@ -618,7 +623,7 @@
         ),
         h(
           'div',
-          { style: { maxHeight: 200, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 1 } },
+          { style: { maxHeight: NT.em(200), overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.08em' } },
           myPlaylists.length
             ? myPlaylists.map(function (playlist) {
                 return h(
@@ -642,7 +647,7 @@
         h('div', { className: 'ntm-menu-sep' }),
         h(
           'div',
-          { style: { display: 'flex', gap: 6 } },
+          { style: { display: 'flex', gap: NT.em(6) } },
           h('input', {
             className: 'ntm-input',
             placeholder: NT.t('playlist_name'),
@@ -817,7 +822,7 @@
     );
     if (!enabled) {
       return h('span', {
-        style: { display: 'inline-block', width: 22, height: 13, flex: 'none', opacity: 0 },
+        style: { display: 'inline-block', width: NT.em(22), height: NT.em(13), flex: 'none', opacity: 0 },
       });
     }
     return h('div', {
@@ -826,9 +831,9 @@
       style: {
         display: 'flex',
         alignItems: 'flex-end',
-        gap: 2,
-        width: 22,
-        height: 13,
+        gap: NT.em(2),
+        width: NT.em(22),
+        height: NT.em(13),
         flex: 'none',
         color: 'var(--dsw-alias-brand-primary)',
       },
