@@ -92,6 +92,9 @@
       contextLabel: '',
       likedPlaylistId: null,
       panelBox: prefs.panelBox || null,
+      /** Pinned geometry, in em units, anchored to the right/bottom edges. */
+      pinned: Boolean(prefs.pinned),
+      anchor: prefs.anchor || null,
       bgLyrics: Object.assign(
         { on: false, opacity: 0.42, size: 34, offset: 78, offsetX: 50, align: 'center', lineHeight: 1.32, weight: 700 },
         prefs.bgLyrics || {},
@@ -330,12 +333,43 @@
 
     /* ------------------------------------------------------------------ panel */
 
+    /** Is any useful part of the panel inside the viewport? */
+    isPanelReachable: function () {
+      var snapshot = store.get();
+      // A pinned panel is anchored with CSS, so it is always on screen by construction.
+      if (snapshot.pinned || !snapshot.panelBox) return true;
+      var box = snapshot.panelBox;
+      var visibleW = Math.min(box.x + box.w, window.innerWidth) - Math.max(box.x, 0);
+      var visibleH = Math.min(box.y + box.h, window.innerHeight) - Math.max(box.y, 0);
+      return visibleW >= 90 && visibleH >= 70;
+    },
+
+    /** 呼唤回来: drop the free position so the panel returns to its docked/pinned spot. */
+    recallPanel: function () {
+      if (store.get().pinned) return;
+      store.set({ panelBox: null });
+      savePrefs({ panelBox: null });
+    },
+
     togglePanel: function () {
-      var open = !store.get().open;
-      store.set({ open: open });
-      if (open) controller.bootstrap();
+      var snapshot = store.get();
+      // A panel dragged past the edge would otherwise be unreachable: the same button
+      // that opens it also brings it home.
+      if (snapshot.open && !controller.isPanelReachable()) {
+        controller.recallPanel();
+        toast(t('recalled'));
+        return;
+      }
+      if (!snapshot.open) {
+        if (!controller.isPanelReachable()) controller.recallPanel();
+        store.set({ open: true });
+        controller.bootstrap();
+        return;
+      }
+      store.set({ open: false });
     },
     openPanel: function () {
+      if (!controller.isPanelReachable()) controller.recallPanel();
       store.set({ open: true });
       controller.bootstrap();
     },
@@ -981,13 +1015,51 @@
     /* ------------------------------------------------------------ window layout */
 
     setPanelBox: function (box) {
+      // Dragging a pinned panel keeps it pinned; the caller passes the anchor instead.
       store.set({ panelBox: box });
       savePrefs({ panelBox: box });
     },
 
+    setAnchor: function (anchor) {
+      store.set({ anchor: anchor, pinned: true, panelBox: null });
+      savePrefs({ anchor: anchor, pinned: true, panelBox: null });
+      toast(t('pinned_hint'));
+    },
+
+    setPinned: function (on) {
+      store.set({ pinned: Boolean(on) });
+      savePrefs({ pinned: Boolean(on) });
+      toast(on ? t('pinned_hint') : t('unpinned_hint'));
+    },
+
+    /**
+     * 固定: express the current geometry in em against the right and bottom edges, so a
+     * window resize keeps the panel glued to the same corner at the same relative size.
+     * Unpinning keeps the panel exactly where it is, just in plain pixels again.
+     */
+    togglePin: function () {
+      var snapshot = store.get();
+      if (snapshot.pinned) {
+        store.set({ pinned: false, anchor: null });
+        savePrefs({ pinned: false, anchor: null });
+        toast(t('unpinned_hint'));
+        return;
+      }
+      if (!snapshot.panelBox) {
+        // Docked: pin the default geometry once, then it never has to be re-measured.
+        store.set({ pinned: true, anchor: null });
+        savePrefs({ pinned: true, anchor: null });
+        toast(t('pinned_hint'));
+        return;
+      }
+      store.set({ pinned: true });
+      savePrefs({ pinned: true });
+      toast(t('pinned_hint'));
+    },
+
     resetPanelBox: function () {
-      store.set({ panelBox: null });
-      savePrefs({ panelBox: null });
+      store.set({ panelBox: null, pinned: false, anchor: null });
+      savePrefs({ panelBox: null, pinned: false, anchor: null });
     },
 
     setLyricsTranslate: function (on) {

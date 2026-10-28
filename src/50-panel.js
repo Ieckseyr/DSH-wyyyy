@@ -133,7 +133,38 @@
     }
 
     /** Write the live geometry straight to the node: no React pass per pointermove. */
-    function paint(node, next) {
+    /** The same rectangle expressed against the right/bottom edges, in type units. */
+    function anchorOf(rect, unit) {
+      // Accepts a DOMRect (width/height) or the drag's own rectangle (w/h).
+      var x = rect.x == null ? rect.left : rect.x;
+      var y = rect.y == null ? rect.top : rect.y;
+      var w = rect.w == null ? rect.width : rect.w;
+      var h = rect.h == null ? rect.height : rect.h;
+      if (![x, y, w, h, unit].every(function (n) { return typeof n === 'number' && isFinite(n); })) return null;
+      return {
+        top: Number((y / unit).toFixed(2)),
+        right: Number(((window.innerWidth - (x + w)) / unit).toFixed(2)),
+        bottom: Number(((window.innerHeight - (y + h)) / unit).toFixed(2)),
+        width: Number((w / unit).toFixed(2)),
+      };
+    }
+
+    /**
+     * Pinned panels are written in em against the right and bottom edges, so a window
+     * resize keeps them glued to the same corner at the same relative size; free panels
+     * are plain pixels and stay where they were put.
+     */
+    function paint(node, next, unit, pinned) {
+      if (pinned) {
+        var anchor = anchorOf(next, unit);
+        node.style.left = 'auto';
+        node.style.right = anchor.right + 'em';
+        node.style.top = anchor.top + 'em';
+        node.style.width = anchor.width + 'em';
+        node.style.bottom = anchor.bottom + 'em';
+        node.style.height = 'auto';
+        return;
+      }
       node.style.left = next.x + 'px';
       node.style.top = next.y + 'px';
       node.style.width = next.w + 'px';
@@ -162,6 +193,7 @@
         w: rect.width,
         h: rect.height,
         next: null,
+        pinned: store.get().pinned,
       };
       try {
         node.setPointerCapture(event.pointerId);
@@ -196,7 +228,7 @@
         next.h = clamp(drag.h + dy, 24 * drag.unit, window.innerHeight - 16);
       }
       drag.next = next;
-      paint(drag.node, next);
+      paint(drag.node, next, drag.unit, drag.pinned);
     }
 
     function endDrag() {
@@ -204,13 +236,54 @@
       if (!drag) return;
       dragRef.current = null;
       document.body.style.userSelect = '';
-      if (drag.next) NT.controller.setPanelBox(drag.next);
+      if (!drag.next) return;
+      var anchor = drag.pinned ? anchorOf(drag.next, drag.unit) : null;
+      if (anchor) NT.controller.setAnchor(anchor);
+      else NT.controller.setPanelBox(drag.next);
     }
 
-    var floating = Boolean(box);
-    var boxStyle = box
-      ? { left: box.x + 'px', top: box.y + 'px', width: box.w + 'px', height: box.h + 'px', right: 'auto', bottom: 'auto' }
-      : undefined;
+    var pinned = use(function (state) {
+      return state.pinned;
+    });
+    var anchor = use(function (state) {
+      return state.anchor;
+    });
+    var floating = Boolean(box) || pinned;
+    var boxStyle;
+    if (pinned && anchor) {
+      boxStyle = {
+        left: 'auto',
+        right: anchor.right + 'em',
+        top: anchor.top + 'em',
+        width: anchor.width + 'em',
+        bottom: anchor.bottom + 'em',
+        height: 'auto',
+      };
+    } else if (!pinned && box) {
+      boxStyle = { left: box.x + 'px', top: box.y + 'px', width: box.w + 'px', height: box.h + 'px', right: 'auto', bottom: 'auto' };
+    }
+
+    /**
+     * 固定 keeps the panel where it is but re-expresses that rectangle against the right
+     * and bottom edges, in type units. Losing the panel off-screen is then the trigger's
+     * job: it recalls the panel instead of closing it.
+     */
+    function togglePin() {
+      if (store.get().pinned) {
+        NT.controller.setPinned(false);
+        return;
+      }
+      var node = panelRef.current;
+      if (!node) {
+        NT.controller.setPinned(true);
+        return;
+      }
+      var rect = node.getBoundingClientRect();
+      var unit = parseFloat(window.getComputedStyle(node).fontSize) || 13;
+      var anchor = anchorOf(rect, unit);
+      if (anchor) NT.controller.setAnchor(anchor);
+      else NT.controller.setPinned(true);
+    }
 
     React.useEffect(
       function () {
@@ -251,7 +324,7 @@
             },
             title: NT.t('drag_hint'),
           },
-          h(NT.HeaderContent),
+          h(NT.HeaderContent, { onTogglePin: togglePin }),
         ),
         h(NT.PanelBody),
         h(NT.PlayerBar),
@@ -280,9 +353,12 @@
   };
 
   /** Header contents, split out so the drag chrome can own the outer element. */
-  NT.HeaderContent = function HeaderContent() {
+  NT.HeaderContent = function HeaderContent(props) {
     var detail = use(function (state) {
       return state.detail;
+    });
+    var pinned = use(function (state) {
+      return state.pinned;
     });
     var profile = use(function (state) {
       return state.login.profile;
@@ -323,6 +399,15 @@
               },
             })
           : null,
+        h(NT.IconButton, {
+          name: 'pin',
+          title: pinned ? NT.t('pin_off') : NT.t('pin_on'),
+          active: pinned,
+          className: 'ntm-head-btn',
+          onClick: function () {
+            if (props && props.onTogglePin) props.onTogglePin();
+          },
+        }),
         h(NT.IconButton, {
           name: 'close',
           title: NT.t('close'),

@@ -362,6 +362,34 @@ check('login screen rendered', text().includes('扫码登录') || text().include
 check('QR code drawn', all('.ntm-qr svg path').length === 1, String(all('.ntm-qr svg path').length));
 check('qr key requested', calls.includes('login.qr.key'));
 
+// --- pin: geometry becomes em against the right/bottom edges
+await act(async () => { NT.controller.closePanel(); NT.controller.setTab('roam'); });
+await flush(4);
+await act(async () => { click(root.querySelector('.ntm-trigger')); });
+await flush(6);
+const pinBtn = all('.ntm-head-btn').find((b) => (b.getAttribute('title') || '').includes('固定面板'));
+check('pin button present', Boolean(pinBtn));
+if (pinBtn) {
+  await act(async () => { click(pinBtn); });
+  await flush(4);
+  check('panel pinned', store.get().pinned === true);
+  const anchor = store.get().anchor;
+  check('anchor stored in type units', Boolean(anchor && [anchor.top, anchor.right, anchor.bottom, anchor.width].every(Number.isFinite)), JSON.stringify(anchor));
+  const style = root.querySelector('.ntm-panel').getAttribute('style') || '';
+  check('pinned style is em-anchored', /right:\s*[\d.]+em/.test(style) && /bottom:\s*[\d.]+em/.test(style), style);
+  await act(async () => { click(pinBtn); });
+  await flush(4);
+  check('panel unpinned', store.get().pinned === false);
+}
+
+// --- recall: a panel parked outside the viewport answers the trigger
+await act(async () => { NT.controller.setPanelBox({ x: 4000, y: 3000, w: 400, h: 500 }); });
+await flush(4);
+check('panel is off-screen', NT.controller.isPanelReachable() === false);
+await act(async () => { click(root.querySelector('.ntm-trigger')); });
+await flush(4);
+check('trigger recalls instead of closing', store.get().open === true && store.get().panelBox === null, JSON.stringify({ open: store.get().open, box: store.get().panelBox }));
+
 // --- close
 await act(async () => {
   const closeBtn = all('.ntm-head-btn').find((b) => b.getAttribute('title') === '收起');
