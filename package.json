@@ -1,0 +1,63 @@
+{
+  "name": "dsh-wyyyy",
+  "version": "1.0.0",
+  "description": "网易云音乐播放器 for DeepSeek Harness: 扫码登录、私人漫游、歌单、歌词、音质与音效，纯许愿产物。NetEase Cloud Music player sidebar for the DSH Web GUI.",
+  "type": "module",
+  "license": "MIT",
+  "author": "Ieckseyr",
+  "icon": "./icon.svg",
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "dsh-platform",
+    "dshmarket",
+    "deepseek-harness",
+    "netease",
+    "music",
+    "player"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ieckseyr/DSH-wyyyy.git"
+  },
+  "homepage": "https://github.com/Ieckseyr/DSH-wyyyy#readme",
+  "bugs": {
+    "url": "https://github.com/Ieckseyr/DSH-wyyyy/issues"
+  },
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg"
+  },
+  "files": [
+    "index.js",
+    "client.js",
+    "cordis.patch.yml",
+    "lib/",
+    "src/",
+    "locale/*.json",
+    "icon.svg",
+    "README.md",
+    "LICENSE",
+    "build-client.mjs",
+    "smoke-client.mjs",
+    "test-host.mjs",
+    "test-qr.mjs"
+  ],
+  "scripts": {
+    "build": "node build-client.mjs",
+    "test": "node build-client.mjs && node test-host.mjs && node smoke-client.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dsh": {
+    "bundle": { "patch": "./cordis.patch.yml" },
+    "client": {
+      "platform": "web",
+      "immediately": true,
+      "inject": ["@deepseek-ai/dsh-client-ui-conversation"]
+    }
+  }
+}

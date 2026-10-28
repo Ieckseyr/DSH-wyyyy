@@ -1,0 +1,9 @@
+node_modules/
+*.log
+*.png
+!icon.png
+!docs/**/*.png
+.DS_Store
+Thumbs.db
+.tmp/
+dist/
